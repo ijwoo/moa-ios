@@ -1,0 +1,11 @@
+*.xcodeproj/
+xcuserdata/
+DerivedData/
+build/
+.DS_Store
+node_modules/
+.env
+build-device/
+scripts/certs/
+scripts/fastlane/report.xml
+Config/Secrets.xcconfig

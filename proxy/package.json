@@ -1,0 +1,16 @@
+{
+  "name": "meeting-summary-proxy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "회의 요약 앱용 Claude API 프록시 (API 키는 서버에만 둔다)",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.7.0"
+  }
+}
