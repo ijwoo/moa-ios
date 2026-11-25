@@ -16,8 +16,8 @@
 <br/>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/media/moa-demo-dark.gif">
-  <img src="docs/media/moa-demo.gif" width="360" alt="모아 iOS 데모: 요청 → 폰으로 손 넘기기 → 결과 카드">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/media/moa-demo-ko-dark.gif">
+  <img src="docs/media/moa-demo-ko.gif" width="360" alt="모아 iOS 데모: 요청 → 폰으로 손 넘기기 → 결과 카드">
 </picture>
 
 <sub>아이폰에서 요청 → 맥 브라우저가 작업 → 캡차에서 멈춤 → 폰으로 실시간 화면 전달 → 해결 후 이어서 완료.</sub>
@@ -50,7 +50,7 @@
 | **작업 중 끼어들기** | `-demo -demoAgent -demoNewChat -demoReport -demoSteer -demoAsk "한 장짜리 보고서 만들어 줘" -demoSteerSay "그래프는 막대로 바꿔 줘"` |
 | **기억 화면** | `-demo -demoAgent -demoTab profile -demoProfileScreen memory -demoMemory` |
 
-`-demoEnglish`를 함께 넣으면 위 GIF처럼 데모 화면이 영어로 나옵니다(영어 README의 명령).
+`-demoEnglish`를 함께 넣으면 데모 화면이 영어로 나옵니다(영어 README의 GIF·명령).
 
 ---
 
