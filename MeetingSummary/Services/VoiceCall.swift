@@ -12,7 +12,7 @@ enum VoiceText {
     /// 맥이 준 읽을 글을 거를 때의 길이 (맥의 글은 자르지 않는다)
     static let sayLimit = 600
     /// 전화를 받을 때의 인사 (D139)
-    static let greeting = "여보세요, 모아예요. 무엇을 도와드릴까요?"
+    static let greeting = "여보세요, 모아예요. 오늘은 뭐부터 할까요?"
 
     /// 소리로 읽으면 안 되는 그림 글자: 이모지, 이모지를 잇는 글자(ZWJ·이체 선택자·피부색), 화살표·도형·별 같은 기호
     nonisolated static func isPictograph(_ scalar: Unicode.Scalar) -> Bool {

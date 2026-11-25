@@ -5,7 +5,7 @@ import UIKit
 /// 내 정보 탭: 할 일과 맥 / 환경 설정 / 연결 및 계정 / 데이터 및 권한 / 앱 정보 (D51, D147: 맨 위 제목과 내 기록 묶음은 뺐다).
 ///
 /// 시스템 설정 화면처럼 묶음 목록 한 장이다. 줄에는 이름과 지금 값만 두고, 고르기·긴 설명·세부 상태는 눌러서 들어간 화면에 둔다.
-/// 표시하는 숫자와 상태는 모두 실제 데이터·코드 동작에서 온다. 아직 없는 기능(앱 계정 로그인)은 흐린 한 줄로만 둔다.
+/// 표시하는 숫자와 상태는 모두 실제 데이터·코드 동작에서 온다.
 /// 브라우저 로그인·메일 계정은 연동 센터(`IntegrationsView`)에서 다룬다. 여기에는 줄마다 지금 상태만 보인다 (D49).
 struct ProfileView: View {
     @Query private var actionItems: [ActionItem]
@@ -203,16 +203,10 @@ struct ProfileView: View {
                 }
             }
             .accessibilityHint("연동 센터에서 메일 계정 상태를 봅니다")
-            SettingsRow(
-                icon: .circleUserRound, tint: DS.Colors.textSecondary, title: "앱 계정 로그인",
-                titleColor: DS.Colors.textSecondary, value: "준비 중"
-            )
-            .accessibilityElement(children: .combine)
-            .accessibilityHint("아직 사용할 수 없습니다")
         } header: {
             Text("연결 및 계정")
         } footer: {
-            Text("앱 계정은 아직 없어요. 지금은 계정 없이 이 기기에서만 동작해요.")
+            Text("계정 로그인 없이 이 기기와 내 맥에서만 동작해요.")
         }
     }
 

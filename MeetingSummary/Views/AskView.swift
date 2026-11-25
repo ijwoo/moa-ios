@@ -715,11 +715,11 @@ struct AskView: View {
         } else {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(session.hasAgent ? "무엇을 도와드릴까요?" : "무엇이 궁금하세요?")
+                    Text(session.hasAgent ? "무엇부터 시작할까요?" : "무엇이 궁금하세요?")
                         .font(.title.weight(.bold))
                         .foregroundStyle(DS.Chat.textPrimary)
                     Text(session.hasAgent
-                         ? "회의 내용을 묻거나 메일 초안 같은 일을 맡겨 보세요. 초안은 승인한 뒤에만 저장하고, 보내지는 않아요."
+                         ? "회의 내용을 묻거나 메일 초안 같은 일을 맡겨 보세요. 바꾸는 일은 승인한 뒤에만 해요."
                          : "지난 회의에서 찾아 근거와 함께 답해 드려요.")
                         .font(.subheadline)
                         .lineSpacing(3)

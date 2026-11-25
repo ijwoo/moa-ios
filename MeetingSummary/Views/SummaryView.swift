@@ -34,7 +34,7 @@ struct SummaryView: View {
                 Section {
                     LabeledContent("녹음 길이", value: MeetingText.timestamp(meeting.duration))
                     if meeting.status == .recording {
-                        Text("요약은 아직 만들어지지 않았습니다. (요약 기능은 3단계에서 연결됩니다)")
+                        Text("요약이 아직 준비되지 않았어요.")
                             .font(.footnote)
                             .foregroundStyle(DS.Colors.textSecondary)
                     }
