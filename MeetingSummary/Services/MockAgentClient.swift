@@ -162,9 +162,9 @@ enum MockHandoverScreen {
             UIBezierPath(roundedRect: CGRect(x: 24, y: 120, width: 342, height: 400), cornerRadius: 12).fill()
             let title: [NSAttributedString.Key: Any] = [.font: UIFont.boldSystemFont(ofSize: 20), .foregroundColor: UIColor.darkText]
             let body: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 15), .foregroundColor: UIColor.darkGray]
-            ("가상몰" as NSString).draw(at: CGPoint(x: 24, y: 48), withAttributes: title)
-            ("사람인지 확인해 주세요" as NSString).draw(at: CGPoint(x: 44, y: 140), withAttributes: title)
-            ("자전거가 있는 칸을 모두 누르세요" as NSString).draw(at: CGPoint(x: 44, y: 172), withAttributes: body)
+            (DemoText.t("가상몰") as NSString).draw(at: CGPoint(x: 24, y: 48), withAttributes: title)
+            (DemoText.t("사람인지 확인해 주세요") as NSString).draw(at: CGPoint(x: 44, y: 140), withAttributes: title)
+            (DemoText.t("자전거가 있는 칸을 모두 누르세요") as NSString).draw(at: CGPoint(x: 44, y: 172), withAttributes: body)
             for row in 0..<3 {
                 for column in 0..<3 {
                     let rect = CGRect(x: 44 + column * 104, y: 210 + row * 84, width: 96, height: 76)
@@ -175,7 +175,7 @@ enum MockHandoverScreen {
             let typed = inputs.compactMap { if case .text(let text) = $0 { return text } else { return nil } }.joined()
             UIColor(white: 0.9, alpha: 1).setFill()
             UIBezierPath(roundedRect: CGRect(x: 44, y: 470, width: 302, height: 36), cornerRadius: 8).fill()
-            ((typed.isEmpty ? "확인 문자" : typed) as NSString).draw(at: CGPoint(x: 54, y: 478), withAttributes: body)
+            ((typed.isEmpty ? DemoText.t("확인 문자") : typed) as NSString).draw(at: CGPoint(x: 54, y: 478), withAttributes: body)
             UIColor.systemRed.setFill()
             for case let .tap(x, y) in inputs.suffix(12) {
                 UIBezierPath(ovalIn: CGRect(x: x - 8, y: y - 8, width: 16, height: 16)).fill()
@@ -444,6 +444,32 @@ actor MockAgentClient: AgentProviding {
         actions: [AgentReportCard.Action(label: "가상몰에서 보기", url: URL(string: "https://shop.example.com/earbuds"))]
     )
 
+    /// English demo reel card (`-demoEnglish`). Stores and prices are made up / 영문 데모의 답변 카드 (가게·값은 모두 지어낸 것)
+    static let reelCardEnglish = AgentReportCard(
+        kind: .answer, title: "Wireless earbuds · best price", subtitle: "Demo Shop · 3 sellers compared",
+        blocks: [
+            .stat(label: "Cheapest", value: "$39.80", note: "Free shipping"),
+            .list([
+                SpaceBlock.Item(title: "Moonlight Electronics", subtitle: "Arrives tomorrow", trailing: "$39.80"),
+                SpaceBlock.Item(title: "Garam Digital", subtitle: "Arrives in 2 days", trailing: "$41.50"),
+                SpaceBlock.Item(title: "Hanbit Store", subtitle: "Arrives in 3 days", trailing: "$43.00"),
+            ]),
+        ],
+        actions: [AgentReportCard.Action(label: "View on Demo Shop", url: URL(string: "https://shop.example.com/earbuds"))]
+    )
+
+    /// English commands in the README demos / README 영어 데모 명령: "Find the lowest price for …", "… cheapest …"
+    static func englishPriceAsk(_ text: String) -> Bool {
+        let lower = text.lowercased()
+        return lower.contains("lowest price") || lower.contains("cheapest") || lower.contains("best price")
+    }
+
+    /// "Switch to a bar chart", "Make it shorter", "Change …" (steering an English demo task)
+    static func englishSteer(_ text: String) -> Bool {
+        let lower = text.lowercased()
+        return ["switch", "change", "shorter", "instead"].contains { lower.contains($0) }
+    }
+
     /// 작업실에서 보고서를 만드는 맥처럼 (실행 인자 `-demoReport`, 테스트는 `enableReport()`): 단계가 길어 끼어들기를 보기 좋다
     private var reportDemo = ProcessInfo.processInfo.arguments.contains("-demoReport")
     func enableReport() { reportDemo = true }
@@ -452,7 +478,8 @@ actor MockAgentClient: AgentProviding {
     private var steerDemo = ProcessInfo.processInfo.arguments.contains("-demoSteer")
     func enableSteer() { steerDemo = true }
 
-    static let handoverChoices = ["다 했어요", "그만하기"]
+    /// English demo (`-demoEnglish`) shows these in English / 영문 데모에서는 영어로
+    static var handoverChoices: [String] { ["다 했어요", "그만하기"].map(DemoText.t) }
 
     /// 이 번호의 손 넘기기가 아직 열려 있는지 (작업 질문, 또는 답하지 않은 로그인 물음 D149)
     private func handoverOpen(_ id: String) -> Bool {
@@ -480,17 +507,17 @@ actor MockAgentClient: AgentProviding {
 
     private func handOffHandover(_ request: String, conversationID: String) async throws -> AgentReply {
         var state = try await start(task: request, context: nil)
-        state.serverTitle = "가상몰에서 찾기"
+        state.serverTitle = DemoText.t("가상몰에서 찾기")
         jobs[state.id]?.state = state
         jobs[state.id]?.queue = Self.reelDemo ? ["열기 · shop.test", "화면 확인", "가격 비교"] : ["열기 · shop.test", "화면 확인"]
         jobs[state.id]?.reel = Self.reelDemo
         jobs[state.id]?.next = .done
         jobs[state.id]?.asks = AgentQuestion(
-            id: "q-\(state.id)", text: "사람인지 확인하는 화면이 나왔어요. 브라우저를 열어 직접 풀어 주세요. 다 하면 \"다 했어요\"를 눌러 주세요.",
+            id: "q-\(state.id)", text: DemoText.t("사람인지 확인하는 화면이 나왔어요. 브라우저를 열어 직접 풀어 주세요. 다 하면 \"다 했어요\"를 눌러 주세요."),
             choices: Self.handoverChoices,
-            handover: AgentHandover(id: "h_\(state.id.filter { $0.isLetter || $0.isNumber })", reason: "사람 확인 퍼즐", host: "shop.test", idleClose: 300)
+            handover: AgentHandover(id: "h_\(state.id.filter { $0.isLetter || $0.isNumber })", reason: DemoText.t("사람 확인 퍼즐"), host: "shop.test", idleClose: 300)
         )
-        return AgentReply(conversationID: conversationID, replies: ["네, 가상몰에서 찾아볼게요."], action: .task(state))
+        return AgentReply(conversationID: conversationID, replies: [DemoText.t("네, 가상몰에서 찾아볼게요.")], action: .task(state))
     }
 
     func searchMac(_ query: String, limit: Int) async throws -> [ActivityEntry] {
@@ -1196,29 +1223,29 @@ actor MockAgentClient: AgentProviding {
             return AgentReply(conversationID: id, replies: ["네이버 로그인 화면을 열게요."], action: .siteLogin(site: "naver"))
         }
         // 끼어들기를 하는 맥 (D152, `-demoSteer`, 테스트는 `enableSteer()`): 도는 작업이 있을 때 "바꿔"·"줄여"가 든 말은 그 작업에 전한다
-        if steerDemo, text.contains("바꿔") || text.contains("줄여"),
+        if steerDemo, text.contains("바꿔") || text.contains("줄여") || Self.englishSteer(text),
            let running = jobs.values.first(where: { $0.state.phase == .running && ($0.conversationID == nil || $0.conversationID == id) }) {
             var job = running
             job.state.steers = (job.state.steers ?? []) + [AgentSteerNote(time: Date.now.formatted(.iso8601), text: text, applied: false)]
             narrate(&job, "덧붙인 말을 받았어요 — 지금 단계가 끝나면 반영해요")
             jobs[job.state.id] = job
             var reply = AgentReply(
-                conversationID: id, replies: ["지금 하는 작업에 전했어요. 지금 단계가 끝나면 반영해요."], action: .none
+                conversationID: id, replies: [DemoText.t("지금 하는 작업에 전했어요. 지금 단계가 끝나면 반영해요.")], action: .none
             )
             reply.steer = AgentSteer(taskID: job.state.id, mode: .inject)
             return reply
         }
-        if reportDemo, text.contains("보고서") {
+        if reportDemo, text.contains("보고서") || text.lowercased().contains("report") {
             var state = try await start(task: text, context: nil)
-            state.serverTitle = "보고서 만들기"
+            state.serverTitle = DemoText.t("보고서 만들기")
             state.skill = "workroom"
             jobs[state.id]?.state = state
             jobs[state.id]?.queue = Self.reportSteps
             jobs[state.id]?.next = .done
             jobs[state.id]?.report = true
-            return AgentReply(conversationID: id, replies: ["네, 작업실에서 한 장짜리 보고서로 만들게요."], action: .task(state))
+            return AgentReply(conversationID: id, replies: [DemoText.t("네, 작업실에서 한 장짜리 보고서로 만들게요.")], action: .task(state))
         }
-        if handoverDemo, text.contains("사람 확인") || (Self.reelDemo && text.contains("최저가")) {
+        if handoverDemo, text.contains("사람 확인") || (Self.reelDemo && (text.contains("최저가") || Self.englishPriceAsk(text))) {
             return try await handOffHandover(text, conversationID: id)
         }
         // 로그인한 사이트 안에서 해 주는 맥: "todo.test에 … 추가해줘" → 그 사이트 안에서 하는 작업 (D80)
@@ -1748,7 +1775,7 @@ actor MockAgentClient: AgentProviding {
             if !job.queue.isEmpty {
                 let step = job.queue.removeFirst()
                 job.state.steps.append(step)
-                job.state.activity = Self.activity(step)
+                job.state.activity = DemoText.t(Self.activity(step))
                 narrate(&job, Self.narration(step))
             } else {
                 job.state.phase = job.next
@@ -1767,14 +1794,14 @@ actor MockAgentClient: AgentProviding {
                         sender: job.sendsFrom
                     )
                 case .done where job.reel:
-                    job.state.result = "가장 싼 곳은 달빛 전자, 39,800원이에요."
-                    var report = AgentReport(done: ["가상몰에서 무선 이어폰 판매처 3곳의 값을 비교했어요"], sources: ["https://shop.example.com/earbuds"])
-                    report.card = Self.reelCard
+                    job.state.result = DemoText.t("가장 싼 곳은 달빛 전자, 39,800원이에요.")
+                    var report = AgentReport(done: [DemoText.t("가상몰에서 무선 이어폰 판매처 3곳의 값을 비교했어요")], sources: ["https://shop.example.com/earbuds"])
+                    report.card = DemoText.english ? Self.reelCardEnglish : Self.reelCard
                     job.state.report = report
                     narrate(&job, "작업을 마쳤어요")
                 case .done where job.report:
                     let steered = job.state.steers?.isEmpty == false
-                    job.state.result = steered ? "한 장짜리 보고서를 만들었어요. 그래프는 막대로 바꿨어요." : "한 장짜리 보고서를 만들었어요."
+                    job.state.result = DemoText.t(steered ? "한 장짜리 보고서를 만들었어요. 그래프는 막대로 바꿨어요." : "한 장짜리 보고서를 만들었어요.")
                     job.state.report = AgentReport(done: [job.state.result ?? ""])
                     narrate(&job, "작업을 마쳤어요")
                 case .done where job.acts:
@@ -1904,11 +1931,11 @@ actor MockAgentClient: AgentProviding {
     private func narrate(_ job: inout Job, _ text: String) {
         guard v2 || job.sendsFrom != nil else { return }
         job.state.narration = (job.state.narration ?? []) + [Self.say(text)]
-        if job.state.phase == .running { job.state.activity = text }
+        if job.state.phase == .running { job.state.activity = DemoText.t(text) }
     }
 
     private static func say(_ text: String) -> AgentNarration {
-        AgentNarration(time: Date.now.formatted(.iso8601), text: text)
+        AgentNarration(time: Date.now.formatted(.iso8601), text: DemoText.t(text))
     }
 
     /// 실제 서버의 진행 설명 문장 (입력한 내용은 쓰지 않고 칸·버튼 이름만)
@@ -3212,6 +3239,29 @@ struct MockMemory: Sendable {
         guard demo != "empty" else {
             profile = ""
             archive = []
+            return
+        }
+        if DemoText.english {
+            // English demo (`-demoEnglish`). All made up / 영문 데모 (모두 지어낸 것)
+            profile = """
+            ## Me
+            - Wants action items right after every meeting
+            - No notifications before 9 AM
+            ## People
+            - Sky Kim: design lead, trades mockups over email
+            ## In progress
+            - Review the demo shop redesign (due Friday)
+            ## Preferences
+            - Short answers, conclusion first
+            ## Never
+            - Never send email without approval
+            """
+            source = .digest
+            updatedAt = Date(timeIntervalSince1970: 1_763_449_800)
+            archive = [
+                Line(when: "2026-11-11 20:10", mine: true, text: "Send the redesign mockups to Sky by Friday", next: "Got it — I'll remind you Friday morning."),
+                Line(when: "2026-11-12 09:30", mine: false, text: "Mockup review is set for Thursday 2 PM.", next: nil),
+            ]
             return
         }
         profile = """

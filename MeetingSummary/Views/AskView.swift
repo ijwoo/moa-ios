@@ -121,7 +121,7 @@ struct AskView: View {
         if session.hasAgent, session.agentReachable != false {
             list[1] = "지난 회의 할 일로 팀 공유 메일 초안 써줘"
         }
-        return list
+        return list.map(DemoText.t)
     }
 
     var body: some View {
@@ -715,12 +715,12 @@ struct AskView: View {
         } else {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(session.hasAgent ? "무엇부터 시작할까요?" : "무엇이 궁금하세요?")
+                    Text(DemoText.t(session.hasAgent ? "무엇부터 시작할까요?" : "무엇이 궁금하세요?"))
                         .font(.title.weight(.bold))
                         .foregroundStyle(DS.Chat.textPrimary)
-                    Text(session.hasAgent
+                    Text(DemoText.t(session.hasAgent
                          ? "회의 내용을 묻거나 메일 초안 같은 일을 맡겨 보세요. 바꾸는 일은 승인한 뒤에만 해요."
-                         : "지난 회의에서 찾아 근거와 함께 답해 드려요.")
+                         : "지난 회의에서 찾아 근거와 함께 답해 드려요."))
                         .font(.subheadline)
                         .lineSpacing(3)
                         .foregroundStyle(DS.Chat.textSecondary)
@@ -780,7 +780,9 @@ struct AskView: View {
         .background(alignment: .top) { ChatBarBackdrop() }
     }
 
-    private var placeholder: String {
+    private var placeholder: String { DemoText.t(placeholderKorean) }
+
+    private var placeholderKorean: String {
         if !canType { return "회의를 녹음하면 질문할 수 있어요" }
         if session.hasPendingApproval { return "위 승인 요청에 먼저 답해 주세요" }
         if replying != nil { return "답장 보내기" }
@@ -1557,7 +1559,7 @@ private struct HeaderStatus: View {
                 showGuide: false, step1: true, step2: true, step3: true, step4: true, ripple: false
             )
             .accessibilityHidden(true)
-            Text("모아")
+            Text(DemoText.t("모아"))
                 .font(.subheadline.weight(.bold))
                 .foregroundStyle(DS.Chat.textPrimary)
             switch status {
@@ -1571,7 +1573,7 @@ private struct HeaderStatus: View {
                 }
             }
             if let text {
-                Text(text)
+                Text(DemoText.t(text))
                     .font(.footnote)
                     .foregroundStyle(DS.Chat.textSecondary)
                     .contentTransition(.opacity)

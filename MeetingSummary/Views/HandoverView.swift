@@ -41,7 +41,7 @@ struct HandoverView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 if let reason = handover.reason {
-                    Text(reason)
+                    Text(DemoText.t(reason))
                         .font(.footnote)
                         .foregroundStyle(DS.Chat.textSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -52,11 +52,11 @@ struct HandoverView: View {
                 controls
             }
             .background(DS.Chat.background.ignoresSafeArea())
-            .navigationTitle(handover.host ?? "맥의 브라우저")
+            .navigationTitle(handover.host ?? DemoText.t("맥의 브라우저"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("닫기") { dismiss() }
+                    Button(DemoText.t("닫기")) { dismiss() }
                 }
             }
         }
@@ -111,7 +111,7 @@ struct HandoverView: View {
                     } description: {
                         Text("질문이 끝났거나 5분 동안 입력이 없어 맥이 닫았어요.")
                     } actions: {
-                        Button("닫기") { dismiss() }.buttonStyle(.bordered)
+                        Button(DemoText.t("닫기")) { dismiss() }.buttonStyle(.bordered)
                     }
                     .background(DS.Chat.background.opacity(0.92))
                 }
@@ -150,7 +150,7 @@ struct HandoverView: View {
             }
             HStack(spacing: 8) {
                 Picker("손짓", selection: $mode) {
-                    ForEach(Mode.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(Mode.allCases) { Text(DemoText.t($0.rawValue)).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 Button {

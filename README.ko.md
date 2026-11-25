@@ -50,6 +50,8 @@
 | **작업 중 끼어들기** | `-demo -demoAgent -demoNewChat -demoReport -demoSteer -demoAsk "한 장짜리 보고서 만들어 줘" -demoSteerSay "그래프는 막대로 바꿔 줘"` |
 | **기억 화면** | `-demo -demoAgent -demoTab profile -demoProfileScreen memory -demoMemory` |
 
+`-demoEnglish`를 함께 넣으면 위 GIF처럼 데모 화면이 영어로 나옵니다(영어 README의 명령).
+
 ---
 
 ## 빌드

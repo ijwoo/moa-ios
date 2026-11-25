@@ -237,7 +237,7 @@ struct AgentRunView: View {
 
             switch state.phase {
             case .running:
-                Button("멈추기", role: .cancel) {
+                Button(DemoText.t("멈추기"), role: .cancel) {
                     Haptic.tap()
                     onCancel()
                 }
@@ -362,7 +362,7 @@ private struct QuestionCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             CardHeader(
-                title: question.handover == nil ? "확인할 것이 있어요" : "직접 해 주셔야 해요",
+                title: DemoText.t(question.handover == nil ? "확인할 것이 있어요" : "직접 해 주셔야 해요"),
                 icon: question.handover == nil ? "questionmark.circle.fill" : "hand.point.up.left.fill", color: DS.Chat.accent
             )
 
@@ -375,7 +375,7 @@ private struct QuestionCard: View {
             // 손 넘기기 (D123): 맥의 브라우저 화면을 폰에 띄워 직접 푼다. 답을 받은 뒤에는 열지 않는다
             if let handover = question.handover, question.received != true, let agent = captures?.handoverAgent {
                 Button { showingBrowser = true } label: {
-                    Label("브라우저 열기", systemImage: "macbook.and.iphone").frame(maxWidth: .infinity)
+                    Label(DemoText.t("브라우저 열기"), systemImage: "macbook.and.iphone").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(DS.Chat.userBubble)
@@ -410,6 +410,9 @@ private struct QuestionCard: View {
 
     /// 어떻게 답하는지. 허락 질문은 맥이 선택지의 글만 허락으로 받으므로, 입력창으로 답하라고 하지 않는다
     private var hint: String {
+        if question.handover != nil, DemoText.english {
+            return "The agent waits while you do this. Tap “\(question.choices.first ?? "Done")” when you're finished. The screen isn't saved on your phone."
+        }
         if question.handover != nil { return "에이전트는 그동안 누르지 않아요. 다 하셨으면 \"\(question.choices.first ?? "다 했어요")\"를 눌러 주세요. 받은 화면은 폰에 저장하지 않아요." }
         if question.choices.isEmpty { return "아래 입력창에 답해 주세요. 답하면 하던 작업을 이어서 해요." }
         if picksOnly { return "단추로 골라 주세요. 입력창에 쓴 글은 허락으로 받지 않아서, 하지 않고 끝나요." }
@@ -601,7 +604,7 @@ private struct AnsweredQuestion: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(answered.question)
                 .foregroundStyle(DS.Chat.textSecondary)
-            Text("내 답: \(answered.answer)")
+            Text(DemoText.english ? "Your answer: \(answered.answer)" : "내 답: \(answered.answer)")
                 .fontWeight(.semibold)
                 .foregroundStyle(DS.Chat.textPrimary)
             if !answered.delivered {
@@ -1503,10 +1506,11 @@ struct AgentSteerLine: View {
             Image(systemName: "arrow.turn.down.right")
                 .font(.caption2.weight(.semibold))
                 .accessibilityHidden(true)
-            Text(count > 1 ? "덧붙인 말 \(count)개 · “\(note.text)”" : "덧붙인 말 · “\(note.text)”")
+            Text(DemoText.english ? (count > 1 ? "\(count) notes · “\(note.text)”" : "Note · “\(note.text)”")
+                 : count > 1 ? "덧붙인 말 \(count)개 · “\(note.text)”" : "덧붙인 말 · “\(note.text)”")
                 .lineLimit(1)
                 .truncationMode(.tail)
-            Text(note.applied ? "반영함" : "반영 전")
+            Text(DemoText.t(note.applied ? "반영함" : "반영 전"))
                 .fontWeight(.semibold)
                 .foregroundStyle(note.applied ? DS.Chat.success : DS.Chat.textSecondary)
                 .fixedSize()

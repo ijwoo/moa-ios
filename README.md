@@ -45,9 +45,11 @@ No Mac server setup required to inspect the UI and flows. Add any of these launc
 
 | Flow | Launch Arguments |
 |---|---|
-| **Full Demo Reel** | `-demo -demoAgent -demoHandover -demoNewChat -demoReel "Find the lowest price for wireless earbuds"` |
-| **Live Task Steering** | `-demo -demoAgent -demoNewChat -demoReport -demoSteer -demoAsk "Make a 1-page report" -demoSteerSay "Switch to a bar chart"` |
-| **Memory Screen** | `-demo -demoAgent -demoTab profile -demoProfileScreen memory -demoMemory` |
+| **Full Demo Reel** | `-demo -demoAgent -demoHandover -demoNewChat -demoEnglish -demoReel "Find the lowest price for wireless earbuds"` |
+| **Live Task Steering** | `-demo -demoAgent -demoNewChat -demoEnglish -demoReport -demoSteer -demoAsk "Make a 1-page report" -demoSteerSay "Switch to a bar chart"` |
+| **Memory Screen** | `-demo -demoAgent -demoEnglish -demoTab profile -demoProfileScreen memory -demoMemory` |
+
+`-demoEnglish` shows these demo flows in English, as in the GIF above. The app itself is in Korean.
 
 ---
 

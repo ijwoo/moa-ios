@@ -55,7 +55,7 @@ struct MemoryView: View {
         }
         #endif
         }
-        .navigationTitle("기억")
+        .navigationTitle(DemoText.t("기억"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
         .task { await model.load() }
@@ -108,6 +108,7 @@ struct MemoryView: View {
 
     /// "대화에서 정리됨 · 11월 18일 오후 3:10" 같은 한 줄과 보관한 대화의 수
     static func footer(_ memory: AgentMemory) -> String {
+        if DemoText.english { return englishFooter(memory) }
         var parts: [String] = []
         let how: String? = switch memory.source {
         case .digest: "대화에서 정리됨"
@@ -122,6 +123,26 @@ struct MemoryView: View {
             parts.append(memory.since.map { "\(Self.dayText($0))부터 대화 \(memory.turns)개를 보관하고 있어요" } ?? "대화 \(memory.turns)개를 보관하고 있어요")
         }
         parts.append("대화가 15분 잠잠하면 맥이 다시 정리해요.")
+        return parts.joined(separator: "\n")
+    }
+
+    /// English demo footer (`-demoEnglish`) / 영문 데모의 아래 줄
+    private static func englishFooter(_ memory: AgentMemory) -> String {
+        var parts: [String] = []
+        let how: String? = switch memory.source {
+        case .digest: "Summarized from chats"
+        case .user: "Edited by you"
+        case .undo: "Reverted"
+        case nil: nil
+        }
+        if let how {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US")
+            formatter.dateFormat = "MMM d, h:mm a"
+            parts.append(memory.updatedAt.map { "\(how) · \(formatter.string(from: $0))" } ?? how)
+        }
+        if memory.turns > 0 { parts.append("Keeping \(memory.turns) past chats") }
+        parts.append("Moa re-summarizes after 15 quiet minutes.")
         return parts.joined(separator: "\n")
     }
 
@@ -146,18 +167,19 @@ struct MemoryView: View {
             Button {
                 editing = true
             } label: {
-                SettingsActionLabel(title: "직접 고치기", icon: .fileText)
+                SettingsActionLabel(title: DemoText.t("직접 고치기"), icon: .fileText)
             }
             .disabled(model.isChanging)
             Button {
                 Task { await model.undo() }
             } label: {
-                SettingsActionLabel(title: "한 단계 되돌리기", icon: .history)
+                SettingsActionLabel(title: DemoText.t("한 단계 되돌리기"), icon: .history)
             }
             // 전 판이 있는지는 맥만 안다 (처음 쓴 요약에도 없다). 눌러 보고 없으면 그렇게 알린다
             .disabled(model.isChanging || memory.isEmpty)
         } footer: {
-            Text("고친 글은 맥이 비밀번호·카드 번호 같은 값을 지우고 \(AgentMemory.savedLimit)자까지만 저장해요.")
+            Text(DemoText.english ? "Moa strips passwords, card numbers and similar values from edits, and keeps up to \(AgentMemory.savedLimit) characters."
+                 : "고친 글은 맥이 비밀번호·카드 번호 같은 값을 지우고 \(AgentMemory.savedLimit)자까지만 저장해요.")
         }
     }
 
@@ -169,7 +191,7 @@ struct MemoryView: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(DS.Colors.textSecondary)
                     .accessibilityHidden(true)
-                TextField("지난 대화에서 찾기", text: $query)
+                TextField(DemoText.t("지난 대화에서 찾기"), text: $query)
                     .focused($searchFocused)
                     .submitLabel(.search)
                     .onSubmit { Task { await model.search(query) } }
@@ -192,9 +214,9 @@ struct MemoryView: View {
                 MemoryHitRow(hit: hit)
             }
         } header: {
-            Text("지난 대화 찾기")
+            Text(DemoText.t("지난 대화 찾기"))
         } footer: {
-            Text("맥이 보관한 지난 대화에서 찾아요. 대화에서 \"지난주에 얘기한 … 뭐였지?\"라고 물어도 맥이 찾아 답해요.")
+            Text(DemoText.t("맥이 보관한 지난 대화에서 찾아요. 대화에서 \"지난주에 얘기한 … 뭐였지?\"라고 물어도 맥이 찾아 답해요."))
         }
     }
 
@@ -205,11 +227,11 @@ struct MemoryView: View {
             Button(role: .destructive) {
                 confirmingClear = true
             } label: {
-                SettingsActionLabel(title: "기억 모두 지우기", icon: .trash, color: DS.Colors.danger)
+                SettingsActionLabel(title: DemoText.t("기억 모두 지우기"), icon: .trash, color: DS.Colors.danger)
             }
             .disabled(model.isChanging)
         } footer: {
-            Text("요약과 지난 대화를 맥에서 모두 지워요. 되돌릴 수 없어요.")
+            Text(DemoText.t("요약과 지난 대화를 맥에서 모두 지워요. 되돌릴 수 없어요."))
         }
         .id(Self.bottomID)
     }

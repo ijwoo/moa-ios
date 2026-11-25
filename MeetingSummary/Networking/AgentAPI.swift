@@ -460,8 +460,8 @@ struct AgentSteer: Equatable, Sendable {
     /// 내 말풍선 아래 작은 줄
     var note: String {
         switch mode {
-        case .inject: "진행 중인 작업에 전했어요"
-        case .replace: "앞 승인을 거두고 새로 시작해요"
+        case .inject: DemoText.t("진행 중인 작업에 전했어요")
+        case .replace: DemoText.t("앞 승인을 거두고 새로 시작해요")
         }
     }
 }
@@ -615,7 +615,9 @@ extension AgentTaskState {
     }
 
     /// 작업 카드의 상태 이름
-    var statusLabel: String {
+    var statusLabel: String { DemoText.t(statusLabelKorean) }
+
+    private var statusLabelKorean: String {
         switch phase {
         case .running: isQueued ? "대기 중" : "진행 중"
         case .awaitingApproval: "승인 필요"
@@ -629,7 +631,9 @@ extension AgentTaskState {
     }
 
     /// 지금 상태를 한 문장으로 (작업 카드·작업 상세)
-    var currentStatus: String {
+    var currentStatus: String { DemoText.t(currentStatusKorean) }
+
+    private var currentStatusKorean: String {
         switch phase {
         case .running:
             isQueued ? (waitReason ?? "앞 작업이 끝나기를 기다리고 있어요") : (activity ?? "작업을 준비하고 있어요")
